@@ -1,75 +1,38 @@
-import { component$ } from '@builder.io/qwik';
-import styles from './hero.module.css';
+import { component$, useSignal } from "@builder.io/qwik";
+import { z } from "@builder.io/qwik-city";
+import { formAction$, useForm } from "@modular-forms/qwik";
+import styles from "./hero.module.css";
+
+const schema1 = z.object({});
+const schema2 = z.object({});
+
+type Form1 = z.infer<typeof schema1>;
+type Form2 = z.infer<typeof schema2>;
+
+const useAction1 = formAction$<Form1>(() => console.log("Form 1 submitted"));
+const useAction2 = formAction$<Form2>(() => console.log("Form 2 submitted"));
 
 export default component$(() => {
+  const signal1 = useSignal<Form1>({});
+  const signal2 = useSignal<Form2>({});
+
+  const [, { Form: Form1 }] = useForm<Form1>({
+    loader: signal1,
+    action: useAction1(),
+  });
+  const [, { Form: Form2 }] = useForm<Form2>({
+    loader: signal2,
+    action: useAction2(),
+  });
+
   return (
-    <div class={['container', styles.hero]}>
-      <h1>
-        So <span class="highlight">fantastic</span>
-        <br />
-        to have <span class="highlight">you</span> here
-      </h1>
-      <p>Have fun building your App with Qwik.</p>
-      <div class={styles['button-group']}>
-        <button
-          onClick$={async () => {
-            const defaults = {
-              spread: 360,
-              ticks: 70,
-              gravity: 0,
-              decay: 0.95,
-              startVelocity: 30,
-              colors: ['006ce9', 'ac7ff4', '18b6f6', '713fc2', 'ffffff'],
-              origin: {
-                x: 0.5,
-                y: 0.35,
-              },
-            };
-
-            function loadConfetti() {
-              return new Promise<(opts: any) => void>((resolve, reject) => {
-                if ((globalThis as any).confetti) {
-                  return resolve((globalThis as any).confetti as any);
-                }
-                const script = document.createElement('script');
-                script.src =
-                  'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
-                script.onload = () => resolve((globalThis as any).confetti as any);
-                script.onerror = reject;
-                document.head.appendChild(script);
-                script.remove();
-              });
-            }
-
-            const confetti = await loadConfetti();
-
-            function shoot() {
-              confetti({
-                ...defaults,
-                particleCount: 80,
-                scalar: 1.2,
-              });
-
-              confetti({
-                ...defaults,
-                particleCount: 60,
-                scalar: 0.75,
-              });
-            }
-
-            setTimeout(shoot, 0);
-            setTimeout(shoot, 100);
-            setTimeout(shoot, 200);
-            setTimeout(shoot, 300);
-            setTimeout(shoot, 400);
-          }}
-        >
-          Time to celebrate
-        </button>
-        <a href="https://qwik.builder.io/docs" target="_blank" class="button button-dark">
-          Explore the docs
-        </a>
-      </div>
+    <div class={["container", styles.hero]}>
+      <Form1>
+        <button type="submit">Submit 1</button>
+      </Form1>
+      <Form2>
+        <button type="submit">Submit 2</button>
+      </Form2>
     </div>
   );
 });
