@@ -9,8 +9,12 @@ const schema2 = z.object({});
 type Form1 = z.infer<typeof schema1>;
 type Form2 = z.infer<typeof schema2>;
 
-const useAction1 = formAction$<Form1>(() => console.log("Form 1 submitted"));
-const useAction2 = formAction$<Form2>(() => console.log("Form 2 submitted"));
+export const useAction1 = formAction$<Form1>(() =>
+  console.log("Form 1 submitted")
+);
+export const useAction2 = formAction$<Form2>(() =>
+  console.log("Form 2 submitted")
+);
 
 export default component$(() => {
   const [, { Form: Form1 }] = useForm<Form1>({
